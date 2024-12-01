@@ -1,18 +1,19 @@
-#include<iostream>
+#include <iostream>
 #include<stdexcept>
 
 using namespace std;
 
-
 //tabla de sah
-void afisareboard(int *board, int n)
+void afisareBoard(int* board, int n)
 {
-	for (int i = 0; i < n; i++){
+	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			if (board[i] == j) {
+			if (board[i] == j)
+			{
 				cout << "X ";
 			}
-			else {
+			else
+			{
 				cout << ". ";
 			}
 		}
@@ -21,79 +22,162 @@ void afisareboard(int *board, int n)
 	cout << endl;
 }
 
-
 //verifica daca un anumit rand si o anumita coloana este libera 
 //se verifica dupa fiecare plasare a unui turn
-bool verificare(int* board, int rand, int coloana) 
+bool verificare(int* board, int rand, int coloana)
 {
-	for(int i = 0; i < rand; i++)
+	for (int i = 0; i < rand; i++)
 	{
 		if (board[i] == coloana)
 		{
-			return false; 
+			return false;
 		}
 	}
 	return true;
 }
 
-int main()
-{
-	try {
-		int n;
-		int rand;
-		int coloana;
-
-		//dimensiune tabla de sah
-		cout << "dimensiune tabla de sah: ";
-		cin >> n;
-
-		if (n <= 0) {
-			throw invalid_argument("trebuie sa fie un numar >=2!\n");
+//dupa ce s a gasit o solutie opreste plasarea de turnuri
+bool solutiecompleta(int* board, int n) {
+	for (int i = 0; i < n; i++) {
+		if (board[i] == -1) {
+			return false;
 		}
+	}
+	return true;
+}
 
-		//alocare memorie pentru board
-		int* board = new int[n];
-
-		//initializare board
+// functie care genereaza solutiie ramase
+void backtrack(int* board, int n, int rand, int** solutii, int& index) {
+	if (rand == n)
+	{
 		for (int i = 0; i < n; i++)
 		{
-			board[i] = -1;
+			solutii[index][i] = board[i];
 		}
+		index++;
+		return;
+	}
 
-		//afisare tabla de sah
-		cout << "\ntabla se sah\n";
-		afisareboard(board, n);
+	for (int coloana = 0; coloana < n; coloana++) {
+		if (verificare(board, rand, coloana))
+		{
+			board[rand] = coloana;
+			backtrack(board, n, rand + 1, solutii, index);
+			board[rand] = -1;
+		}
+	}
+}
+
+int main() {
+	int n;
+
+	//dimensiune tabla de sah
+	cout << "dimensiune tabla de sah: ";
+	cin >> n;
+
+	if (n <= 2) {
+		cout << "dimensiune invalida!" << endl;
+		return 1;
+	}
+
+	//alocare memorie pentru board
+	int* board = new int[n];
+
+	//initializare board
+	for (int i = 0; i < n; i++) {
+		board[i] = -1;
+	}
+
+	//afisare tabla de sah
+	cout << "\ntabla se sah\n";
+	afisareBoard(board, n);
 
 
-		//verificare rand si coloana daca este libera
-		cout << "introduceti randul pentru verificare: ";
+	bool continua = true;
+
+	while (continua)
+	{
+		int rand, coloana;
+
+		cout << "introduceti randul: ";
 		cin >> rand;
 
-		cout << "introduceti coloana pentru verificare: ";
+		if (rand == -1) {
+			continua = false;
+			break;
+		}
+
+		cout << "introduceti coloana: ";
 		cin >> coloana;
 
-
-		if (rand < 0 || rand >= n || coloana<0 || coloana>n) {
-			throw out_of_range("rand sau coloana gresita!\n");
+		// verificare rand si coloana
+		if (rand < 0 || rand >= n || coloana < 0 || coloana >= n) {
+			cout << "rand sau coloana sunt invalide!\n";
+			continue;
 		}
 
-		if (verificare(board, rand, coloana)) {
-			cout << "\nse poate plasa pe randul " << rand << " si coloana " << coloana << "\n";
+		// verifica daca pozitia este valida si plaseaza turn
+		if (verificare(board, rand, coloana))
+		{
+			board[rand] = coloana;
+			cout << "\ntabla de sah dupa plasarea turnului:\n";
+			afisareBoard(board, n);
+
+			// verifica daca s a gasit o solutie 
+			if (solutiecompleta(board, n))
+			{
+				break;
+			}
 		}
 		else {
-			cout << "\nnu se poate plasa pe randul " << rand << " si coloana " << coloana << "\n";
+			cout << "coloana " << (coloana + 1) << " este deja ocupata\n";
 		}
-
-		//eliberare memorie 
-		delete[] board;
-	}
-	catch (const invalid_argument& e) {
-		cout << "" << e.what() << endl;
-	}
-	catch (const out_of_range& e) {
-		cout << "" << e.what() << endl;
 	}
 
+	// generare solutii valide ramase
+	int** solutii = new int*[90];
+
+	for (int i = 0; i < 90; i++)
+	{
+		solutii[i] = new int[n];
+	}
+
+	int index = 0;
+	backtrack(board, n, 0, solutii, index);
+
+
+	// afisare solutii ramase
+	cout << "\nrestul solutiilor posibile\n";
+	for (int i = 0; i < index; i++)
+	{
+		bool identica = true;
+
+		for (int j = 0; j < n; j++)
+		{
+			if (solutii[i][j] != board[j])
+			{
+				identica = false;
+				break;
+			}
+		}
+		if (!identica) {
+			afisareBoard(solutii[i], n);
+		}
+	}
+
+
+	// afisare numar total de solutii
+	cout << "\nnumarul total de solutii: " << index << endl;
+
+
+	// eliberam memoria alocata
+	for (int i = 0; i < 90; i++)
+	{
+		delete[] solutii[i];
+	}
+
+	delete[] solutii;
+	delete[] board;
 
 	return 0;
 }
