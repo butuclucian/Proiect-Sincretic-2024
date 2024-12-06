@@ -3,6 +3,8 @@
 
 using namespace std;
 
+#define MAX 500
+
 //tabla de sah
 void afisareBoard(int* board, int n)
 {
@@ -50,7 +52,7 @@ bool solutiecompleta(int* board, int n) {
 void backtrack(int* board, int n, int rand, int** solutii, int& index) {
 	if (rand == n)
 	{
-		for (int i = 0; i < n; i++)
+		for (int i = 0; i < n ; i++)
 		{
 			solutii[index][i] = board[i];
 		}
@@ -135,9 +137,9 @@ int main() {
 	}
 
 	// generare solutii valide ramase
-	int** solutii = new int*[90];
+	int** solutii = new int*[MAX];
 
-	for (int i = 0; i < 90; i++)
+	for (int i = 0; i < MAX; i++)
 	{
 		solutii[i] = new int[n];
 	}
@@ -171,7 +173,7 @@ int main() {
 
 
 	// eliberam memoria alocata
-	for (int i = 0; i < 90; i++)
+	for (int i = 0; i < MAX; i++)
 	{
 		delete[] solutii[i];
 	}
