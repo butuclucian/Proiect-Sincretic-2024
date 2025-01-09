@@ -3,9 +3,8 @@
 
 using namespace std;
 
-#define MAX 500
+#define MAX 50000
 
-//tabla de sah
 void afisareBoard(int* board, int n)
 {
 	for (int i = 0; i < n; i++) {
@@ -24,8 +23,7 @@ void afisareBoard(int* board, int n)
 	cout << endl;
 }
 
-//verifica daca un anumit rand si o anumita coloana este libera 
-//se verifica dupa fiecare plasare a unui turn
+
 bool verificare(int* board, int rand, int coloana)
 {
 	for (int i = 0; i < rand; i++)
@@ -38,7 +36,7 @@ bool verificare(int* board, int rand, int coloana)
 	return true;
 }
 
-//dupa ce s a gasit o solutie opreste plasarea de turnuri
+
 bool solutiecompleta(int* board, int n) {
 	for (int i = 0; i < n; i++) {
 		if (board[i] == -1) {
@@ -48,7 +46,7 @@ bool solutiecompleta(int* board, int n) {
 	return true;
 }
 
-// functie care genereaza solutiie ramase
+
 void backtrack(int* board, int n, int rand, int** solutii, int& index) {
 	if (rand == n)
 	{
@@ -72,8 +70,6 @@ void backtrack(int* board, int n, int rand, int** solutii, int& index) {
 
 int main() {
 	int n;
-
-	//dimensiune tabla de sah
 	cout << "dimensiune tabla de sah: ";
 	cin >> n;
 
@@ -82,18 +78,15 @@ int main() {
 		return 1;
 	}
 
-	//alocare memorie pentru board
 	int* board = new int[n];
 
-	//initializare board
 	for (int i = 0; i < n; i++) {
 		board[i] = -1;
 	}
 
-	//afisare tabla de sah
+
 	cout << "\ntabla se sah\n";
 	afisareBoard(board, n);
-
 
 	bool continua = true;
 
@@ -104,7 +97,8 @@ int main() {
 		cout << "introduceti randul: ";
 		cin >> rand;
 
-		if (rand == -1) {
+		if (rand == -1) 
+		{
 			continua = false;
 			break;
 		}
@@ -112,43 +106,42 @@ int main() {
 		cout << "introduceti coloana: ";
 		cin >> coloana;
 
-		// verificare rand si coloana
-		if (rand < 0 || rand >= n || coloana < 0 || coloana >= n) {
+		if (rand < 0 || rand >= n || coloana < 0 || coloana >= n) 
+		{
 			cout << "rand sau coloana sunt invalide!\n";
 			continue;
 		}
 
-		// verifica daca pozitia este valida si plaseaza turn
+
 		if (verificare(board, rand, coloana))
 		{
 			board[rand] = coloana;
 			cout << "\ntabla de sah dupa plasarea turnului:\n";
 			afisareBoard(board, n);
 
-			// verifica daca s a gasit o solutie 
 			if (solutiecompleta(board, n))
 			{
 				break;
 			}
 		}
-		else {
+		else 
+		{
 			cout << "coloana " << (coloana + 1) << " este deja ocupata\n";
 		}
 	}
 
-	// generare solutii valide ramase
-	int** solutii = new int*[MAX];
 
+	int** solutii = new int*[MAX];
 	for (int i = 0; i < MAX; i++)
 	{
 		solutii[i] = new int[n];
 	}
 
+
 	int index = 0;
 	backtrack(board, n, 0, solutii, index);
 
 
-	// afisare solutii ramase
 	cout << "\nrestul solutiilor posibile\n";
 	for (int i = 0; i < index; i++)
 	{
@@ -167,12 +160,9 @@ int main() {
 		}
 	}
 
-
-	// afisare numar total de solutii
 	cout << "\nnumarul total de solutii: " << index << endl;
 
 
-	// eliberam memoria alocata
 	for (int i = 0; i < MAX; i++)
 	{
 		delete[] solutii[i];
