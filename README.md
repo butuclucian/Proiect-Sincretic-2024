@@ -64,6 +64,7 @@ Problema celor 8 turnuri presupune plasarea a 8 turnuri pe o tablă de șah astf
    - Plasați manual turnuri, specificând linia și coloana. Dacă doriți să opriți plasarea, introduceți `-1`.
    ![](images/img1.png)
    - Programul va afișa soluțiile găsite automat după validarea pozițiilor curente.
+   ![](images/img2.png)
 
 ---
 
